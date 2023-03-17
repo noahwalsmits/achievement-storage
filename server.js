@@ -3,7 +3,7 @@ require('dotenv').config();
 var http = require('http');
 const PORT = process.env.PORT || 3000;
 
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var database = mysql.createConnection({
     host: process.env.MYSQLHOST,
     user: process.env.MYSQLUSER,
