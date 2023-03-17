@@ -1,13 +1,15 @@
-var http = require('http');
-var mysql = require('mysql');
+require('dotenv').config();
 
+var http = require('http');
 const PORT = process.env.PORT || 3000;
 
+var mysql = require('mysql');
 var database = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "", //TODO add a password to the database
-    database: "taxi"
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD, //TODO add a password to the database
+    port: process.env.MYSQLPORT,
+    database: process.env.MYSQLDATABASE
 });
 
 database.connect((err) => {
@@ -51,7 +53,7 @@ function onRequest(request, response){
             response.end(body);
         });
     } else if(request.method === 'GET') {
-        database.query("SELECT * FROM `destinations`", (err, result, fields) => {
+        database.query("SELECT * FROM `DebugTable`", (err, result, fields) => {
             if(err) {
                 throw err;
             }
