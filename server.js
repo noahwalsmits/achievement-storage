@@ -1,10 +1,13 @@
 var http = require('http');
 var mysql = require('mysql');
 
+const PORT = process.env.PORT || 3000;
+
 var database = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "" //TODO add a password to the database
+    password: "", //TODO add a password to the database
+    database: "taxi"
 });
 
 database.connect((err) => {
@@ -23,8 +26,6 @@ function queryDatabase(query) {
         data = result;
     });
 }
-
-queryDatabase("USE `taxi`");
 
 //this is called every time a http request to the server is made
 function onRequest(request, response){
@@ -62,5 +63,5 @@ function onRequest(request, response){
     }
 }
 
-http.createServer(onRequest).listen(3000);
-console.log('server listening to port 3000');
+http.createServer(onRequest).listen(PORT);
+console.log('server listening to port ${PORT}');
