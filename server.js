@@ -55,7 +55,14 @@ function onRequest(request, response) {
     }
 }
 
-function handleAchievementsByGameRequest(appId, response) {
+function handleAchievementsByGameRequest(appId, response, tries = 0) {
+    if (tries >= 3) {
+        console.error('exceeded maximum tries while handling request for appId %d', appId);
+        response.statusCode = 500;
+        response.end();
+        return;
+    }
+
     console.log('requested achievements for appId %d', appId);
     database.query(
         'SELECT displayName, description, iconUrl, unlockPercentage FROM Achievement WHERE gameAppId = ' + appId,
@@ -66,14 +73,27 @@ function handleAchievementsByGameRequest(appId, response) {
                 response.end();
                 return;
             }
-            //if empty array fill database using steam api and run this function again
+            //if result is empty result fill database using steam api and retry
+            if(!result.length) {
+                if (requestGameAchievements(appId)) {
+                    handleAchievementsByGameRequest(appId, response, tries + 1);
+                    return;
+                }
+                console.warn('could not request data for appId %d', appId);
+                response.statusCode = 404;
+                response.end();
+                return;
+            }
+            //send achievements that were read from the database
             response.end(JSON.stringify(result));
         }
     );
 }
 
 function requestGameAchievements(appId) {
-    //request achievements using steam api and put them in the database
+    console.log('requesting data for appId %d...', appId);
+    //TODO request achievements using steam api and put them in the database
+    return false;
 }
 
 http.createServer(onRequest).listen(PORT);
