@@ -1,4 +1,15 @@
-require('dotenv').config();
+// print process.argv
+function checkArguments() {
+    let envPath = '.env';
+    process.argv.forEach(function (argument, index, array) {
+        if (argument == 'local') {
+            envPath = '.env.local';
+        }
+    });
+    require('dotenv').config({path: envPath});
+}
+checkArguments();
+
 const url = require('url');
 
 const http = require('http');
@@ -74,7 +85,7 @@ function handleAchievementsByGameRequest(appId, response, tries = 0) {
                 return;
             }
             //if result is empty result fill database using steam api and retry
-            if(!result.length) {
+            if (!result.length) {
                 if (requestGameAchievements(appId)) {
                     handleAchievementsByGameRequest(appId, response, tries + 1);
                     return;
